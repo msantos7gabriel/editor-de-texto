@@ -16,6 +16,7 @@ int carregar_arquivo(char *caminho_do_arquivo)
             return EXIT_FAILURE;
         }
         }
+    fclose(arquivo);
     return EXIT_SUCCESS;
 
     // else
