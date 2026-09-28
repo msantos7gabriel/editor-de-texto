@@ -1,0 +1,9 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/biel/Documentos/github/editor-de-texto",
+            "binaryPath": "/home/biel/Documentos/github/editor-de-texto/egg",
+            "binaryArgs": []
+        }
+    ]
+}
