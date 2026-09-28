@@ -1,7 +1,7 @@
 # 1. Configurações Iniciais
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c11
-TARGET = egg.out
+CFLAGS = -Wall -Wextra -pedantic -std=c11 -g
+TARGET = egg
 
 # 2. A MÁGICA ESTÁ AQUI: Procura arquivos .c em todas as pastas e subpastas
 SRCS = $(shell find . -type f -name '*.c')
