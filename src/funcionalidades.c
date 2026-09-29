@@ -1,103 +1,157 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/arquivos.h" // Inclui os cabeçalhos das funções de manipulação do arquivo
+#include <string.h>
+#include "../include/arquivos.h"
 
-/*
- * Função: limpar_tela
- * Objetivo: Limpar o console/terminal para manter a interface do menu organizada.
- */
-void limpar_tela()
-{
-    // Chama o comando "clear" do sistema operacional. 
-    // Nota: "clear" funciona em Linux e macOS. Se fosse no Windows, seria system("cls").
+// --- ESTRUTURA DAS DUAS PILHAS ---
+struct NoPilha {
+    char acao;
+    char texto[256];
+    struct NoPilha *prox;
+};
+
+static struct NoPilha *topo = NULL;       
+static struct NoPilha *topo_redo = NULL;  
+
+// --- FUNÇÕES DA PILHA UNDO ---
+void push(char qual_acao, char* qual_texto) {
+    struct NoPilha *novo = malloc(sizeof(struct NoPilha));
+    if(novo == NULL) return;
+    novo->acao = qual_acao;
+    strcpy(novo->texto, qual_texto);
+    novo->prox = topo;
+    topo = novo;
+}
+
+int pop(char* acao_devolvida, char* texto_devolvido) {
+    if (topo == NULL) return 0; 
+    struct NoPilha *temp = topo;
+    *acao_devolvida = temp->acao;
+    strcpy(texto_devolvido, temp->texto);
+    topo = temp->prox;
+    free(temp);
+    return 1;
+}
+
+// --- FUNÇÕES DA PILHA REDO ---
+void push_redo(char qual_acao, char* qual_texto) {
+    struct NoPilha *novo = malloc(sizeof(struct NoPilha));
+    novo->acao = qual_acao;
+    strcpy(novo->texto, qual_texto);
+    novo->prox = topo_redo;
+    topo_redo = novo;
+}
+
+int pop_redo(char* acao_devolvida, char* texto_devolvido) {
+    if (topo_redo == NULL) return 0; 
+    struct NoPilha *temp = topo_redo;
+    *acao_devolvida = temp->acao;
+    strcpy(texto_devolvido, temp->texto);
+    topo_redo = temp->prox;
+    free(temp);
+    return 1;
+}
+
+void limpar_redo() {
+    struct NoPilha *temp;
+    while (topo_redo != NULL) {
+        temp = topo_redo;
+        topo_redo = topo_redo->prox;
+        free(temp);
+    }
+}
+
+// --- FUNÇÕES DE INTERFACE ---
+void limpar_tela() {
     system("clear"); 
 }
 
-/*
- * Função: limpar_buffer
- * Objetivo: Esvaziar o buffer do teclado (stdin).
- * Por que é necessário: Funções como 'scanf' muitas vezes deixam o "Enter" ('\n') 
- * preso na memória. Se não limparmos, o próximo 'scanf' ou 'fgets' pode ler esse 'Enter'
- * acidentalmente e pular a entrada de dados do usuário.
- */
-void limpar_buffer()
-{
+void limpar_buffer() {
     int ch;
-    // Fica lendo caracteres do teclado um por um até encontrar o 'Enter' (\n)
-    // ou o fim do arquivo/leitura (EOF), consumindo assim o "lixo" que ficou para trás.
-    do
-    {
+    do {
         ch = fgetc(stdin);
     } while (ch != EOF && ch != '\n');
 }
 
-/*
- * Função: menu
- * Objetivo: Gerenciar a escolha do usuário e chamar a função correspondente.
- * Parâmetros Importantes:
- * - FILE **arquivo: Um ponteiro duplo. Ele recebe o ENDEREÇO da variável que guarda 
- *                   o arquivo lá na função main(). Isso permite que o menu passe essa
- *                   referência adiante e permita que o arquivo seja reaberto e atualizado.
- */
+// --- MENU ---
 char menu(char opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo)
 {
-    // Limpa a tela toda vez que o menu for processar uma nova ação
     limpar_tela();
     
-    // Analisa qual foi a letra digitada (já convertida para minúscula pela main)
     switch (opcao)
     {
-    case 'i': // Inserir
-        // Usamos *arquivo (com um asterisco) para "desempacotar" o ponteiro duplo e 
-        // passar o FILE* verdadeiro para a função adicionar_linha.
-        adicionar_linha(*arquivo, qtd_linhas);
+    case 'i': 
+        adicionar_linha(*arquivo, qtd_linhas); 
         break;
         
-    case 'a': // Apagar
-        // Aqui NÃO usamos o asterisco (*). Passamos o ponteiro duplo 'arquivo' diretamente,
-        // porque a função 'deletar_linha' precisa dele duplo para poder reabrir o arquivo
-        // e atualizar a variável original lá na main.
-        deletar_linha(arquivo, qtd_linhas, nome_arquivo);
+    case 'a': 
+        deletar_linha(arquivo, qtd_linhas, nome_arquivo); 
         break;
         
-    case 'u':
-        /* Desfazer - A ser implementado */
-        break;
+    case 'u': 
+    { // As chaves aqui resolvem o erro da linha 118
+        char acao_realizada;
+        char texto_salvo[256];
         
-    case 'c':
-        /* Copiar - A ser implementado */
+        if (pop(&acao_realizada, texto_salvo)) {
+            if (acao_realizada == 'I') {
+                printf("-> Undo executado: Apagando a ultima linha inserida...\n");
+                apagar_ultima_linha_silencioso(arquivo, qtd_linhas, nome_arquivo);
+                push_redo('I', texto_salvo);
+            } 
+            else if (acao_realizada == 'A') {
+                printf("-> Undo executado: Restaurando linha apagada no final do arquivo...\n");
+                adicionar_linha_silencioso(*arquivo, qtd_linhas, texto_salvo);
+                push_redo('A', texto_salvo);
+            }
+        } else {
+            printf("-> Historico vazio! Nao ha nada para desfazer.\n");
+        }
         break;
+    }
+    
+    case 'y': 
+    case 'r':
+    { // Chaves obrigatórias novamente
+        char acao_desfeita;
+        char texto_salvo[256];
         
-    case 'v':
-        /* Colar - A ser implementado */
+        if (pop_redo(&acao_desfeita, texto_salvo)) {
+            if (acao_desfeita == 'I') {
+                printf("-> Redo: A refazer a insercao...\n");
+                adicionar_linha_silencioso(*arquivo, qtd_linhas, texto_salvo);
+                push('I', texto_salvo); 
+            } 
+            else if (acao_desfeita == 'A') {
+                printf("-> Redo: A refazer a exclusao...\n");
+                apagar_ultima_linha_silencioso(arquivo, qtd_linhas, nome_arquivo);
+                push('A', texto_salvo);
+            }
+        } else {
+            printf("-> Nada para refazer!\n");
+        }
         break;
+    }
         
-    case 's': // Salvar
+    case 'c': break;
+    case 'v': break;
+        
+    case 's': 
         printf("O Arquivo foi salvo na memoria\n");
-        // O fflush força o sistema operacional a pegar tudo o que está no buffer de saída
-        // e gravar imediatamente no disco rígido (no arquivo físico).
-        // Usamos *arquivo para aplicar a função ao ponteiro FILE* real.
         fflush(*arquivo);
         break;
         
-    case 'q': // Sair (Quit)
+    case 'q': 
         printf("\nFechando o Arquivo...");
-        
-        // Fecha o arquivo verdadeiro com segurança antes de sair do programa.
-        // Como atualizamos os ponteiros corretamente no 'deletar_linha', esse fclose
-        // vai fechar o arquivo certo e não causará mais o erro de "Double Free".
         fclose(*arquivo);
-
         printf("\nSaindo do Programa...\n");
         break;
 
-    default: // Caso o usuário digite uma letra que não está mapeada acima
+    default:
         limpar_tela();
         printf("\nOpção invalida...\nTente Novamente\n");
         break;
     }
     
-    // Retorna a opção escolhida para que o do-while na função main saiba se deve
-    // continuar (qualquer letra) ou quebrar o loop (se retornar 'q').
     return opcao;
 }
