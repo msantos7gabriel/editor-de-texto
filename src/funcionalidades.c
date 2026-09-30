@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/arquivos.h"
-#include "../include/fila.h"
-#define MAXIMO_CHAR 80
 
 // --- ESTRUTURA DAS DUAS PILHAS ---
 struct NoPilha {
@@ -75,51 +73,6 @@ void limpar_buffer() {
     } while (ch != EOF && ch != '\n');
 }
 
-// Copia uma linha do arquivo para a fila do clipboard
-void copiar_linha(FILE *arquivo, int qtd_linhas)
-{
-    int linha_desejada;
-
-    printf("\nQuantidade de linhas: %d", qtd_linhas);
-    printf("\nQual linha deseja copiar? ");
-    scanf("%d", &linha_desejada);
-    limpar_buffer();
-
-    // Verifica se o número da linha é válido
-    if (linha_desejada < 1 || linha_desejada > qtd_linhas)
-    {
-        printf("Linha inválida.\n");
-        return;
-    }
-
-    char linha[MAXIMO_CHAR];
-
-    // Lê a linha escolhida do arquivo
-    ler_linha(arquivo, linha_desejada, linha);
-
-    // Adiciona a linha à fila do clipboard
-    enqueue(linha);
-
-    printf("Linha copiada com sucesso.\n");
-}
-
-
-// Retira uma linha da fila do clipboard e adicional ao final do arquivo
-void colar_linha(FILE *arquivo, int *qtd_linhas){
-
-    char linha[MAXIMO_CHAR];
-
-
-    // Tenta retirar a linha mais antiga da fila
-    if (dequeue(linha)){
-        // Adiciona a linha retirada ao arquivo
-        adicionar_linha_silencioso(arquivo, qtd_linhas, linha);
-        printf("Linha colada com sucesso.\n");
-    }
-
-}
-
-
 // --- MENU ---
 char menu(char opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo)
 {
@@ -180,13 +133,8 @@ char menu(char opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo)
         break;
     }
         
-    case 'c': 
-        copiar_linha(*arquivo, *qtd_linhas);
-        break;
-
-    case 'v': 
-        colar_linha(*arquivo, qtd_linhas);
-        break;
+    case 'c': break;
+    case 'v': break;
         
     case 's': 
         printf("O Arquivo foi salvo na memoria\n");

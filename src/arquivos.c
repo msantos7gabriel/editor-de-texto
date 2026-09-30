@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "../include/funcionalidades.h"
 
 // Limitando o tamanho da quantidade de linhas e quantidade de caracteres para a entrada de dados no arquivo.
@@ -227,24 +226,4 @@ void apagar_ultima_linha_silencioso(FILE **arquivo, int *qtd_linhas, char *nome_
     rename(".temp.txt", nome_arquivo);
     *qtd_linhas -= 1;
     *arquivo = fopen(nome_arquivo, "a+");
-}
-
-
-// Localiza e copia uma linha específica do arquivo
-// para a variável recebida pelo parâmetro
-void ler_linha(FILE *arquivo, int linha_desejada, char *linha){
-    char buffer[MAXIMO_CHAR];
-    int linha_atual = 1;
-
-    rewind(arquivo);
-
-    while (fgets(buffer, MAXIMO_CHAR, arquivo) != NULL){
-        // Verifica se a linha atual é a linha desejada
-        if (linha_atual == linha_desejada) {
-            strcpy(linha, buffer);
-            return;
-        } else {
-            linha_atual++;
-        }
-    }
 }
