@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../include/funcionalidades.h"
 
 // Limitando o tamanho da quantidade de linhas e quantidade de caracteres para a entrada de dados no arquivo.
@@ -77,6 +78,16 @@ void adicionar_linha(FILE *arquivo, int *qtd_linhas)
     // Pega a entrada digitada pelo usuário no teclado (stdin)
     fgets(linha_nova, MAXIMO_CHAR, stdin);
 
+    // --- INÍCIO DA LIGAÇÃO COM A ISSUE 2 ---
+    // Agora capturamos o texto real ('linha_nova') no momento exato em que o usuário digita.
+    // Guardamos na Pilha com a tag 'I' de Inserção para o Undo saber o que foi feito.
+    push('I', linha_nova); 
+    
+    // Como o usuário fez uma ação nova manualmente, o futuro mudou.
+    // Portanto, devemos limpar a Pilha de Redo (Refazer).
+    limpar_redo(); 
+    // --- FIM DA LIGAÇÃO ---
+
     // Escreve a nova linha diretamente no arquivo.
     // Como abrimos em modo "a+", isso sempre será escrito no final.
     fprintf(arquivo, "%s", linha_nova);
@@ -138,6 +149,15 @@ void deletar_linha(FILE **arquivo, int *qtd_linhas, char *nome_arquivo)
         {
             fprintf(temp, "%s", buffer);
         }
+        else 
+        {
+            // --- INÍCIO DA LIGAÇÃO COM A ISSUE 2 ---
+            // Se for a linha que vamos apagar, nós a "salvamos" antes dela sumir!
+            // Guardamos na Pilha com a tag 'A' (Apagar) e o texto exato ('buffer').
+            push('A', buffer);
+            limpar_redo(); // Limpa o Redo pois uma nova ação manual foi feita
+            // --- FIM DA LIGAÇÃO ---
+        }
         linha_atual++; // Passa para a próxima linha
     }
 
@@ -161,4 +181,70 @@ void deletar_linha(FILE **arquivo, int *qtd_linhas, char *nome_arquivo)
     printf("\nLinha deletada com sucesso.");
 
     return;
+}
+
+// =========================================================================
+// FUNÇÕES SILENCIOSAS PARA O UNDO USAR (Exigência da Issue 2)
+// O Undo não pode chamar as funções normais acima, porque elas possuem
+// printf/scanf e parariam o programa esperando o usuário digitar algo.
+// =========================================================================
+
+/*
+ * Função: adicionar_linha_silencioso
+ * Objetivo: Inserir texto diretamente no final do arquivo sem interação do usuário (usado pelo Undo/Redo).
+ */
+void adicionar_linha_silencioso(FILE *arquivo, int *qtd_linhas, char *texto) {
+    fprintf(arquivo, "%s", texto);
+    *qtd_linhas += 1;
+}
+
+/*
+ * Função: apagar_ultima_linha_silencioso
+ * Objetivo: Remove a última linha do arquivo copiando as demais para um temporário (usado pelo Undo/Redo).
+ */
+void apagar_ultima_linha_silencioso(FILE **arquivo, int *qtd_linhas, char *nome_arquivo) {
+    if (*qtd_linhas == 0) return;
+    
+    char buffer[MAXIMO_CHAR];
+    int linha_atual = 1;
+    
+    // Cria um arquivo temporário para copiar tudo, exceto a última linha
+    FILE *temp = fopen(".temp.txt", "w+");
+    rewind(*arquivo);
+    
+    while (fgets(buffer, MAXIMO_CHAR, *arquivo) != NULL) {
+        // Se a linha atual não for a última, copia para o arquivo novo
+        if (linha_atual != *qtd_linhas) { 
+            fprintf(temp, "%s", buffer);
+        }
+        linha_atual++;
+    }
+    
+    // Substitui o arquivo original pelo temporário (que agora tem 1 linha a menos)
+    fclose(*arquivo);
+    fclose(temp);
+    remove(nome_arquivo);
+    rename(".temp.txt", nome_arquivo);
+    *qtd_linhas -= 1;
+    *arquivo = fopen(nome_arquivo, "a+");
+}
+
+
+// Localiza e copia uma linha específica do arquivo
+// para a variável recebida pelo parâmetro
+void ler_linha(FILE *arquivo, int linha_desejada, char *linha){
+    char buffer[MAXIMO_CHAR];
+    int linha_atual = 1;
+
+    rewind(arquivo);
+
+    while (fgets(buffer, MAXIMO_CHAR, arquivo) != NULL){
+        // Verifica se a linha atual é a linha desejada
+        if (linha_atual == linha_desejada) {
+            strcpy(linha, buffer);
+            return;
+        } else {
+            linha_atual++;
+        }
+    }
 }
