@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/funcionalidades.h"
+#include "../include/pilha.h"
 
 // Limitando o tamanho da quantidade de linhas e quantidade de caracteres para a entrada de dados no arquivo.
 // O uso de #define facilita a manutenção do código (se precisar mudar o tamanho, muda só aqui).
