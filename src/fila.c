@@ -67,7 +67,7 @@ void renderizar_fila_lateral(int max_x)
     }
 
     // Título da barra lateral
-    mvprintw(1, coluna_inicio, "====== AREA DE TRANSFERENCIA ======");
+    mvprintw(1, coluna_inicio, "====== ÁREA DE TRANSFERÊNCIA ======");
 
     if (qtd == 0)
     {
