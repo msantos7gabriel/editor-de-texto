@@ -47,8 +47,6 @@ int main(int argc, char *argv[])
 
         renderizar_tela(infoarq.arquivo, &max_y, &max_x, infoarq.cursor_linha);
 
-        printw("%i", infoarq.cursor_linha);
-
         opcao = getch();
         if (opcao != KEY_UP && opcao != KEY_DOWN)
         {

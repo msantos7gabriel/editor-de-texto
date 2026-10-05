@@ -116,8 +116,8 @@ void copiar_linha(FILE *arquivo, int qtd_linhas)
 
     printw("\nQuantidade de linhas: %d", qtd_linhas);
     printw("\nQual linha deseja copiar? ");
-    scanw("%d", &linha_desejada);
     refresh();
+    scanw("%d", &linha_desejada);
 
     // Verifica se o número da linha é válido
     if (linha_desejada < 1 || linha_desejada > qtd_linhas)
@@ -147,7 +147,7 @@ void colar_linha(FILE *arquivo, int *qtd_linhas)
     {
         // Adiciona a linha retirada ao arquivo
         adicionar_linha_silencioso(arquivo, qtd_linhas, linha);
-        printw("Linha colada com sucesso.\n");
+        printw("Linha colada no final do arquivo com sucesso.\n");
     }
 }
 
@@ -203,6 +203,7 @@ int menu(int opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo, int *cu
         {
             printw("-> Historico vazio! Nao ha nada para desfazer.\n");
         }
+        toque_para_continuar();
         break;
     }
 
@@ -231,6 +232,7 @@ int menu(int opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo, int *cu
         {
             printw("-> Nada para refazer!\n");
         }
+        toque_para_continuar();
         break;
     }
 
@@ -241,6 +243,7 @@ int menu(int opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo, int *cu
 
     case 'v':
         colar_linha(*arquivo, qtd_linhas);
+        toque_para_continuar();
         break;
 
     case 's':

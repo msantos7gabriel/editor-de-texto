@@ -83,6 +83,7 @@ void adicionar_linha(FILE *arquivo, int *qtd_linhas)
 
     // Pega a entrada digitada pelo usuário no teclado (stdin)
     wgetnstr(stdscr, linha_nova, MAXIMO_CHAR);
+    strcat(linha_nova, "\n");
 
     // --- INÍCIO DA LIGAÇÃO COM A ISSUE 2 ---
     // Agora capturamos o texto real ('linha_nova') no momento exato em que o usuário digita.
@@ -203,6 +204,7 @@ void deletar_linha(FILE **arquivo, int *qtd_linhas, char *nome_arquivo)
 void adicionar_linha_silencioso(FILE *arquivo, int *qtd_linhas, char *texto)
 {
     fprintf(arquivo, "%s", texto);
+    fflush(arquivo);
     *qtd_linhas += 1;
 }
 
