@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ncurses.h>
 #include "../include/fila.h"
 
 #define TAM_FILA 5
@@ -39,7 +40,7 @@ int dequeue(char *linha){
 
     if (qtd == 0)
     {
-        printf("Não há linhas a serem retiradas.\n");
+        printw("Não há linhas a serem retiradas.\n");
         return 0;
     } 
     else

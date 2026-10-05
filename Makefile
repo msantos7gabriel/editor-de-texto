@@ -1,6 +1,6 @@
 # 1. Configurações Iniciais
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c11 -g
+CFLAGS = -Wall -Wextra -pedantic -std=c11 -g -lncursesw
 TARGET = egg
 
 # 2. A MÁGICA ESTÁ AQUI: Procura arquivos .c em todas as pastas e subpastas

@@ -1,7 +1,17 @@
 #ifndef ARQUIVOS_H
 #define ARQUIVOS_H
 
-#include <stdio.h>
+typedef struct
+{
+    FILE *arquivo;
+    int quantidade_linhas;
+    int cursor_linha;
+} InfoArquivos;
+
+// Limitando o tamanho da quantidade de linhas e quantidade de caracteres para a entrada de dados no arquivo.
+// O uso de #define facilita a manutenção do código (se precisar mudar o tamanho, muda só aqui).
+#define MAXIMO_LINHAS 100
+#define MAXIMO_CHAR 80
 
 int contador_de_linhas(FILE *arquivo);
 
