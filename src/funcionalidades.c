@@ -24,10 +24,10 @@ void renderizar_tela(FILE *arquivo, int *max_y, int *max_x, int cursor)
 {
     getmaxyx(stdscr, *max_y, *max_x);
 
-    if (*max_y < 16 || *max_x < 80)
+    if (*max_y < 16 || *max_x < 110)
     {
         printw("Aviso: O terminal esta muito pequeno!\n");
-        printw("Tamanho minimo: 80x16. Tamanho atual: %dx%d\n", *max_x, *max_y);
+        printw("Tamanho minimo: 110x16. Tamanho atual: %dx%d\n", *max_x, *max_y);
         printw("\nPor favor, aumente a janela do terminal para continuar...");
         refresh();
         getch();
@@ -66,10 +66,12 @@ void renderizar_tela(FILE *arquivo, int *max_y, int *max_x, int cursor)
     // --- INÍCIO DA RENDERIZAÇÃO DO MENU (Barra Inferior) ---
     // Em vez de usar printw (que joga o texto onde o cursor parou),
     // usamos mvprintw para cravar o menu sempre nas duas últimas linhas da tela.
-
+    renderizar_fila_lateral(*max_x);
     mvprintw(*max_y - 2, 0, "Opcoes: [I]nserir, [A]pagar, [U]ndo, [R]edo, [C]opiar, [V]Colar, [S]alvar, [Q]Sair");
     mvprintw(*max_y - 1, 0, "Escolha: ");
     // --- FIM DA RENDERIZAÇÃO DO MENU ---
+
+    // RENDENRIZA A NOSSA NOVA BARRA LATERAL
 
     // Avisa a placa de vídeo para desenhar tudo
     refresh();
