@@ -4,7 +4,6 @@
 #include "../include/arquivos.h"
 #include "../include/fila.h"
 
-// --- ESTRUTURA DAS DUAS PILHAS ---
 struct NoPilha
 {
     char acao;
@@ -15,7 +14,6 @@ struct NoPilha
 static struct NoPilha *topo = NULL;
 static struct NoPilha *topo_redo = NULL;
 
-// --- FUNÇÕES DA PILHA UNDO ---
 void push(char qual_acao, char *qual_texto)
 {
     struct NoPilha *novo = malloc(sizeof(struct NoPilha));
@@ -39,7 +37,6 @@ int pop(char *acao_devolvida, char *texto_devolvido)
     return 1;
 }
 
-// --- FUNÇÕES DA PILHA REDO ---
 void push_redo(char qual_acao, char *qual_texto)
 {
     struct NoPilha *novo = malloc(sizeof(struct NoPilha));
