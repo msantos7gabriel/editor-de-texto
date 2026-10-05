@@ -16,7 +16,7 @@ Projeto desenvolvido em C para simular um editor de texto em terminal, com foco 
 
 ## 👥 Integrantes
 
-<table>
+<table width="100%">
     <tr>
         <td align="center" width="33%">
             <a href="https://github.com/msantos7gabriel">
@@ -45,13 +45,13 @@ Projeto desenvolvido em C para simular um editor de texto em terminal, com foco 
     </tr>
 </table>
 
-<p align="center">
+<div align="center">
     <a href="https://github.com/msantos7gabriel">@msantos7gabriel</a>
     &nbsp;&bull;&nbsp;
     <a href="https://github.com/geovane-nves">@geovane-nves</a>
     &nbsp;&bull;&nbsp;
     <a href="https://github.com/baianoo-cmd">@baianoo-cmd</a>
-</p>
+</div>
 
 ## ✨ Sobre o projeto
 
