@@ -11,7 +11,6 @@ void salvar(FILE *arquivo);
 void limpar_buffer();
 int menu(int opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo, int *cursor_pos);
 
-// --- FUNÇÕES DA FILA (COPIAR / COLAR) ---
 void copiar_linha(FILE *arquivo, int qtd_linhas);
 void colar_linha(FILE *arquivo, int *qtd_linhas);
 

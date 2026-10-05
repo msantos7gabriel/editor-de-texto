@@ -4,33 +4,29 @@
 #include <locale.h>
 #include <ncurses.h>
 
-// Nossas Bibliotecas
 #include "../include/arquivos.h"
 #include "../include/funcionalidades.h"
 
-// Estrutura global
 InfoArquivos infoarq = {NULL, 0, 0};
 
 int main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "");
-    // 1. PRIMEIRO: Verificamos os argumentos (antes de abrir qualquer tela)
+
     if (argc != 2)
     {
         fprintf(stderr, "Erro: Número incorreto de argumentos.\n");
         fprintf(stderr, "Uso: %s <caminho_do_arquivo>\n", argv[0]);
-        return EXIT_FAILURE; // Sai do programa na hora
+        return EXIT_FAILURE;
     }
 
-    // Ncurses Start
     ncurses_start();
 
-    // 3. TERCEIRO: Carregamos o arquivo
     infoarq.arquivo = carregar_arquivo(argv[1], &infoarq.quantidade_linhas);
 
     if (infoarq.arquivo == NULL)
     {
-        // MUITO IMPORTANTE: Se der erro, desliga o ncurses antes de fechar o programa!
+
         endwin();
         fprintf(stderr, "Erro fatal ao abrir o arquivo.\n");
         return EXIT_FAILURE;
@@ -39,10 +35,9 @@ int main(int argc, char *argv[])
     int opcao;
     int max_y, max_x;
 
-    // 4. QUARTO: Loop principal do programa
     do
     {
-        // Limpa os rastros da rodada anterior
+
         clear();
 
         renderizar_tela(infoarq.arquivo, &max_y, &max_x, infoarq.cursor_linha);
@@ -57,7 +52,6 @@ int main(int argc, char *argv[])
 
     } while ((char)opcao != 'q');
 
-    // 5. QUINTO: O usuário pediu para sair, encerramos tudo em segurança
     endwin();
 
     return EXIT_SUCCESS;

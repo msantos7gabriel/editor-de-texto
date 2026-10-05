@@ -8,8 +8,6 @@ typedef struct
     int cursor_linha;
 } InfoArquivos;
 
-// Limitando o tamanho da quantidade de linhas e quantidade de caracteres para a entrada de dados no arquivo.
-// O uso de #define facilita a manutenção do código (se precisar mudar o tamanho, muda só aqui).
 #define MAXIMO_LINHAS 100
 #define MAXIMO_CHAR 80
 
@@ -25,7 +23,6 @@ void adicionar_linha_silencioso(FILE *arquivo, int *qtd_linhas, char *texto);
 
 void apagar_ultima_linha_silencioso(FILE **arquivo, int *qtd_linhas, char *nome_arquivo);
 
-// Localiza uma linha específica do arquivo
 void ler_linha(FILE *arquivo, int linha_desejada, char *linha);
 
 #endif

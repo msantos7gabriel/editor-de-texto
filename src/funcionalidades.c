@@ -3,20 +3,17 @@
 #include <string.h>
 #include <ncurses.h>
 
-// Nossas Bibliotecas
 #include "../include/arquivos.h"
 #include "../include/pilha.h"
 #include "../include/fila.h"
 #define MAXIMO_CHAR 80
 
-// --- FUNÇÕES DE INTERFACE ---
-
 void ncurses_start()
 {
-    // Iniciamos o ambiente do ncurses
+
     initscr();
     cbreak();
-    // noecho();
+
     keypad(stdscr, TRUE);
 }
 
@@ -39,41 +36,29 @@ void renderizar_tela(FILE *arquivo, int *max_y, int *max_x, int cursor)
     int linha_atual = 0;
     int linha_impressa_na_tela = 0;
 
-    // --- LÊ O ARQUIVO APENAS UMA VEZ DO INÍCIO AO FIM ---
     while (fgets(buffer, MAXIMO_CHAR, arquivo) != NULL)
     {
-        // Só imprime se a linha já passou do "scroll" do cursor
+
         if (linha_atual >= cursor)
         {
-            // Proteção da margem do menu inferior
+
             if (linha_impressa_na_tela >= *max_y - 3)
                 break;
 
-            // Imprime e pula para a linha de baixo no monitor
             mvprintw(linha_impressa_na_tela, 0, "%3d | %s", linha_atual + 1, buffer);
             linha_impressa_na_tela++;
         }
         linha_atual++;
     }
 
-    // Menu Inferior
     mvprintw(*max_y - 2, 0, "Opcoes: [I]nserir, [A]pagar, [U]ndo, [R]edo, [C]opiar, [V]Colar, [S]alvar, [Q]Sair");
     mvprintw(*max_y - 1, 0, "Escolha: ");
     refresh();
 
-    // --- FIM DA RENDERIZAÇÃO DO TEXTO ---
-
-    // --- INÍCIO DA RENDERIZAÇÃO DO MENU (Barra Inferior) ---
-    // Em vez de usar printw (que joga o texto onde o cursor parou),
-    // usamos mvprintw para cravar o menu sempre nas duas últimas linhas da tela.
     renderizar_fila_lateral(*max_x);
     mvprintw(*max_y - 2, 0, "Opcoes: [I]nserir, [A]pagar, [U]ndo, [R]edo, [C]opiar, [V]Colar, [S]alvar, [Q]Sair");
     mvprintw(*max_y - 1, 0, "Escolha: ");
-    // --- FIM DA RENDERIZAÇÃO DO MENU ---
 
-    // RENDENRIZA A NOSSA NOVA BARRA LATERAL
-
-    // Avisa a placa de vídeo para desenhar tudo
     refresh();
 }
 
@@ -111,7 +96,6 @@ void salvar(FILE *arquivo)
     toque_para_continuar();
 }
 
-// Copia uma linha do arquivo para a fila do clipboard
 void copiar_linha(FILE *arquivo, int qtd_linhas)
 {
     int linha_desejada;
@@ -121,7 +105,6 @@ void copiar_linha(FILE *arquivo, int qtd_linhas)
     refresh();
     scanw("%d", &linha_desejada);
 
-    // Verifica se o número da linha é válido
     if (linha_desejada < 1 || linha_desejada > qtd_linhas)
     {
         printw("Linha inválida.\n");
@@ -130,30 +113,25 @@ void copiar_linha(FILE *arquivo, int qtd_linhas)
 
     char linha[MAXIMO_CHAR];
 
-    // Lê a linha escolhida do arquivo
     ler_linha(arquivo, linha_desejada, linha);
 
-    // Adiciona a linha à fila do clipboard
     enqueue(linha);
 
     printw("Linha copiada com sucesso.\n");
 }
 
-// Retira uma linha da fila do clipboard e adicional ao final do arquivo
 void colar_linha(FILE *arquivo, int *qtd_linhas)
 {
     char linha[MAXIMO_CHAR];
 
-    // Tenta retirar a linha mais antiga da fila
     if (dequeue(linha))
     {
-        // Adiciona a linha retirada ao arquivo
+
         adicionar_linha_silencioso(arquivo, qtd_linhas, linha);
         printw("Linha colada no final do arquivo com sucesso.\n");
     }
 }
 
-// --- MENU ---
 int menu(int opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo, int *cursor_pos)
 {
     limpar_tela();
@@ -180,7 +158,7 @@ int menu(int opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo, int *cu
         break;
 
     case 'u':
-    { // As chaves aqui resolvem o erro da linha 118
+    {
 
         char acao_realizada;
         char texto_salvo[256];
@@ -211,7 +189,7 @@ int menu(int opcao, FILE **arquivo, int *qtd_linhas, char *nome_arquivo, int *cu
 
     case 'y':
     case 'r':
-    { // Chaves obrigatórias novamente
+    {
         char acao_desfeita;
         char texto_salvo[256];
 
