@@ -1,6 +1,7 @@
 # 1. Configurações Iniciais
 CC = gcc
 CFLAGS = -Wall -Wextra -pedantic -std=c11 -g
+LDLIBS = -lncursesw
 TARGET = egg
 
 # 2. A MÁGICA ESTÁ AQUI: Procura arquivos .c em todas as pastas e subpastas
@@ -14,7 +15,7 @@ all: $(TARGET)
 
 # 4. Junta tudo no programa final
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LDLIBS)
 
 # 5. Compila cada .c no seu respectivo .o
 %.o: %.c
